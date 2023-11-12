@@ -5,7 +5,8 @@ require('dotenv').config()
 const port = process.env.PORT || 5000
 const {
     MongoClient,
-    ServerApiVersion
+    ServerApiVersion,
+    ObjectId
 } = require('mongodb');
 
 
@@ -48,6 +49,21 @@ async function run() {
             console.log(foods);
         })
         // Post Foods to Database End
+
+        // Load Single Product Start
+        app.get('/foods/:id', async(req, res) => {
+            const id = req.params.id
+            const query = {_id: new ObjectId(id)}
+            const result = await foodCollection.findOne(query)
+
+            if (!result) {
+                return res.status(404).json({ error: 'Food not found' });
+              }
+
+
+            res.json(result)
+        })
+        // Load Single Product End
     
 
         
