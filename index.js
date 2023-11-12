@@ -32,17 +32,22 @@ async function run() {
         await client.connect();
         const foodCollection = client.db('MEALMINGLE').collection('foods')
 
+        // Get Foods from Database to Server Start
         app.get('/foods', async(req, res) => {
             const cursor = foodCollection.find()
             const result = await cursor.toArray()
             res.json(result)
         })
+        // Get Foods from Database to Server End
+
+        // Post Foods to Database Start
         app.post('/foods', async (req, res) => {
             const foods = req.body;
             const result = await foodCollection.insertOne(foods)
             res.send(result)
             console.log(foods);
         })
+        // Post Foods to Database End
     
 
         
