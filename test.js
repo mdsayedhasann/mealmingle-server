@@ -1,7 +1,6 @@
 const express = require('express')
 const cors = require('cors')
 const app = express()
-require('dotenv').config()
 const port = process.env.PORT || 5000
 const {
     MongoClient,
@@ -25,32 +24,34 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 app.get('/', (req, res) => {    
     res.send('MealMingle Server is running')
 })
+let db
+app.get('foods', async(req, res) => {
+    const foodCollection = db.collection('foods')
+    const cursor = foodCollection.find()
+    const result = await cursor.toArray()
+    res.json(result)
+})
+
+app.post('foods', async (req, res) => {
+    const foods = req.body;
+    console.log(foods);
+})
+
 
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
-        const foodCollection = client.db('MEALMINGLE').collection('foods')
-
-        app.get('/foods', async(req, res) => {
-            const cursor = foodCollection.find()
-            const result = await cursor.toArray()
-            res.json(result)
-        })
-        app.post('/foods', async (req, res) => {
-            const foods = req.body;
-            const result = await foodCollection.insertOne(foods)
-            res.send(result)
-            console.log(foods);
-        })
-    
-
+        db  = client.db('MEALMINGLE')
+        
         
         // Send a ping to confirm a successful connection
         await client.db("admin").command({
             ping: 1
         });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    }catch (error) {
+        console.error('Database error' , error);
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
