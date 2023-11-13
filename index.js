@@ -104,7 +104,7 @@ async function run() {
 
 
         // Food Request Read Start
-        app.get('foodRequest', async(req, res) => {
+        app.get('/foodRequest', async(req, res) => {
             const cursor = foodRequestCollection.find()
             const result = await cursor.toArray()
             res.json(result)
@@ -112,7 +112,13 @@ async function run() {
         // Food Request Read End
 
         // Food Request POST Start
-
+        app.post('/foodRequest', async(req, res) => {
+            const request = req.body
+            console.log('age', request);
+            const result = await foodRequestCollection.insertOne(request)
+            console.log('pore', result);
+            res.send(result)
+        })
         // Food Request POST End
         
         
