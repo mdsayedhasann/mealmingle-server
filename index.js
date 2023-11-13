@@ -32,6 +32,8 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
         const foodCollection = client.db('MEALMINGLE').collection('foods')
+        const foodRequestCollection = client.db('MEALMINGLE').collection('foodRequest')
+
 
         // Get Foods from Database to Server Start
         app.get('/foods', async(req, res) => {
@@ -75,6 +77,45 @@ async function run() {
         })
         // Deleted Food End
     
+        // Update Food Start
+        app.put('/foods/:id', async(req, res) => {
+            const id = req.params.id
+            const filter = {_id: new ObjectId(id)}
+            const option = {
+                upsert: true
+            }
+            const updateFood = req.body
+            const foods = {
+                $set : {
+                    foodName: updateFood.foodName,
+                    foodImage: updateFood.foodImage,
+                    quantity: updateFood.quantity,
+                    expireDate: updateFood.expireDate,
+                    location: updateFood.location
+                }
+            }
+            console.log('Age', foods);
+            const result = await foodCollection.updateOne(filter, foods, option)
+            console.log('Pore', result);
+            res.send(result)
+
+        })
+        // Update Food End
+
+
+        // Food Request Read Start
+        app.get('foodRequest', async(req, res) => {
+            const cursor = foodRequestCollection.find()
+            const result = await cursor.toArray()
+            res.json(result)
+        })
+        // Food Request Read End
+
+        // Food Request POST Start
+
+        // Food Request POST End
+        
+        
 
         
         // Send a ping to confirm a successful connection
